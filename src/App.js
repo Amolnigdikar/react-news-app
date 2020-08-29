@@ -1,24 +1,42 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import { fetchNews, searchNews } from "./NewsApiService";
+import { NewsComponent } from "./components/NewsComponent";
 
 function App() {
+  const [articles, setArticles] = useState([]);
+
+  const fecthData = async () => {
+    const data = await fetchNews();
+    console.log(data);
+    setArticles(data.data.articles);
+  };
+
+  useEffect(() => {
+    fecthData();
+  }, articles);
+
+  const searchTopic = async (e) => {
+    if (e.target.value) {
+      const data = await searchNews(e.target.value);
+      console.log(data);
+      setArticles(data.data.articles);
+    } else {
+      fecthData();
+    }
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Top Headlines</h1>
+      <div
+        className="form-inline"
+        style={{ fontSize: "18px" }}
+        onChange={(e) => searchTopic(e)}
+      >
+        <input type="text" className="input" placeholder="Enter to search" />
+        <NewsComponent articles={articles} />
+      </div>
     </div>
   );
 }
